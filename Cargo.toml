@@ -6,7 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rand = "*"
-inquire = "*"
-termion = "*"
-colorful = "*"
+clap = { version = "3.2.17", features = ["derive"] }
+colorful = "0.2.1"
+inquire = "0.3.0"
+rand = "0.8.5"
+termion = "1.5.6"

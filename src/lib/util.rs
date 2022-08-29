@@ -1,9 +1,9 @@
-use std::{collections::HashMap, ops::Index};
+use std::collections::HashMap;
 
 use super::config::Config;
 use rand::{self, seq::SliceRandom};
 use termion;
-use colorful::{self, Color, core::{ColorInterface, color_string::CString}, Colorful};
+use colorful::{self, Color, core::{color_string::CString}, Colorful};
 
 pub const DIGITS: [char; 10] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 pub const LOWERCASE: [char; 26] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];

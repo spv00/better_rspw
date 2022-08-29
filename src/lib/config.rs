@@ -1,6 +1,6 @@
 use std::{fmt::Debug, process::exit};
 
-use super::util;
+use super::{util, menu};
 use util::Chars;
 
 #[derive(Debug, Clone)]
@@ -8,19 +8,6 @@ pub struct Config{
     pub chars: Vec<util::Chars>,
     pub len: i32,
     pub exclude: Option<Vec<char>>,
-}
-
-#[derive(Debug, Clone)]
-pub struct ConfigError;
-impl std::error::Error for ConfigError{
-    fn description(&self) -> &str {
-        "Something went wrong parsing your command line arguments."
-    }
-}
-impl std::fmt::Display for ConfigError{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Failed to parse config! Exiting!")
-    }
 }
 
 impl Config{
@@ -31,13 +18,19 @@ impl Config{
     pub fn parse(args: Vec<String>) -> Result<Config, ConfigError>{
         // Parse an array of string primitives to a config. For example 16 -p uld wil result in a config of length 16 and with an uppercase, lowercase and digit pool
         // returns either the parsed Config or the default config
-        let mut len = 12;
+        let mut len = Config::default().len;
         let mut chars: Vec<Chars> = vec![Chars::Uppercase, Chars::Lowercase, Chars::Digits];
         let mut excluded: Vec<char> = Vec::new();
-        // Return if arg length is below 1 
+        // Return if arg length is below 1
         if args.len() <= 0{
             return Ok(Config::default());
         }
+
+        // Check for interactive
+        if args.contains(&"-i".to_string()){
+            return Ok(menu::home());
+        }
+
         // Set length by first argument
         len = args.get(1).unwrap_or(&Config::default().len.to_string()).parse::<i32>().unwrap_or(Config::default().len);
         // Get pool values by -p ulds(uppercase, lowercase, digits, special)
@@ -81,5 +74,18 @@ impl Config{
 impl Default for Config{
     fn default() -> Config{
         Config { chars: vec![Chars::Uppercase, Chars::Lowercase, Chars::Digits], len: 12, exclude: None }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ConfigError;
+impl std::error::Error for ConfigError{
+    fn description(&self) -> &str {
+        "Something went wrong parsing your command line arguments."
+    }
+}
+impl std::fmt::Display for ConfigError{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Failed to parse config! Exiting!")
     }
 }
