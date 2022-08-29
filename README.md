@@ -21,3 +21,4 @@ cargo build --release
 | -p | Select which characters to include | `u`: Uppercase, `l`: Lowercase, `d`: Digits, `s`: Special | `rspw -p uld` |
 | -e | Exclude specific characters from the generator |  | `rspw -e abcdefgHIJKLMNOP123!?()` |
 | -i | Interactive Mode | This overwrites all commandline flags set | `rspw -i` |
+| -w | Wordlist checker | Checks every file in the "wordlists" directory for matches with the generated password | `rspw -w` |

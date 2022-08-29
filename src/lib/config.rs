@@ -8,11 +8,12 @@ pub struct Config{
     pub chars: Vec<util::Chars>,
     pub len: i32,
     pub exclude: Option<Vec<char>>,
+    pub check_wordlists: bool,
 }
 
 impl Config{
-    pub fn new(len: i32, chars: Vec<util::Chars>, exclude: Option<Vec<char>>) -> Config{
-        Config { chars: chars, len: len, exclude: exclude}
+    pub fn new(len: i32, chars: Vec<util::Chars>, exclude: Option<Vec<char>>, check_wordlists: bool) -> Config{
+        Config { chars: chars, len: len, exclude: exclude, check_wordlists: check_wordlists}
     }
 
     pub fn parse(args: Vec<String>) -> Result<Config, ConfigError>{
@@ -21,6 +22,7 @@ impl Config{
         let mut len = Config::default().len;
         let mut chars: Vec<Chars> = vec![Chars::Uppercase, Chars::Lowercase, Chars::Digits];
         let mut excluded: Vec<char> = Vec::new();
+        let mut check_wordlists = false;
         // Return if arg length is below 1
         if args.len() <= 0{
             return Ok(Config::default());
@@ -30,9 +32,14 @@ impl Config{
         if args.contains(&"-i".to_string()){
             return Ok(menu::home());
         }
+        // Check for wordlists
+        if args.contains(&"-w".to_string()){
+            check_wordlists = true;
+        }
 
         // Set length by first argument
         len = args.get(1).unwrap_or(&Config::default().len.to_string()).parse::<i32>().unwrap_or(Config::default().len);
+
         // Get pool values by -p ulds(uppercase, lowercase, digits, special)
         if args.contains(&"-p".to_string()){
             chars = Vec::new();
@@ -57,7 +64,8 @@ impl Config{
                 excluded.push(c);
             };
         };
-        return Ok(Config::new(len, chars, Some(excluded)));
+
+        return Ok(Config::new(len, chars, Some(excluded), check_wordlists));
     }
 
     pub fn chars(&self) -> Vec<char>{
@@ -73,7 +81,7 @@ impl Config{
 
 impl Default for Config{
     fn default() -> Config{
-        Config { chars: vec![Chars::Uppercase, Chars::Lowercase, Chars::Digits], len: 12, exclude: None }
+        Config { chars: vec![Chars::Uppercase, Chars::Lowercase, Chars::Digits], len: 12, exclude: None, check_wordlists: false }
     }
 }
 

@@ -5,7 +5,7 @@ use super::util::{Chars};
 
 pub fn home() -> Config{
     let mut config = Config::default();
-    let options = vec!["Set length", "Set characters", "Select preset", "Exclude characters", "View config", "Done!"];
+    let options = vec!["Set length", "Set characters", "Select preset", "Exclude characters", "Other options", "View config", "Done!"];
     'main: loop{
         let ans = inquire::Select::new("Generate Config!", options.clone()).with_help_message("Generate a config").prompt().unwrap();
         match ans{
@@ -13,6 +13,7 @@ pub fn home() -> Config{
             "Set characters" => {config.chars = set_chars()},
             "Select preset" => {config = select_preset()},
             "Exclude characters" => {config.exclude = select_exclude()},
+            "Other options" => {other_options(&mut config);},
             "View config" => {print_conf(&config)},
             "Done!" => {print_conf(&config); break 'main},
             _ => {}
@@ -23,6 +24,19 @@ pub fn home() -> Config{
 
 fn set_length() -> i32{
     inquire::Text::new("Set length").prompt().unwrap().parse::<i32>().unwrap_or(Config::default().len)
+}
+
+fn other_options<'a>(config: &'a mut Config) -> &'a Config{
+    let options = vec!["Check wordlists"];
+    let anss = inquire::MultiSelect::new("Other options", options).prompt().unwrap();
+    for ans in anss{
+        match ans {
+            "Check wordlists" => {config.check_wordlists = true}
+            _ => {todo!()}
+        }
+    } 
+    
+    config
 }
 
 fn set_chars() -> Vec<Chars>{
@@ -46,13 +60,13 @@ fn select_preset() -> Config{
     let options = vec!["Bad", "Simple", "Medium", "Advanced", "Secure", "Gynormous"];
     let ans = inquire::Select::new("Select preset!", options).prompt().unwrap();
     match ans{
-        "Bad" => {Config::new(6, vec![Chars::Lowercase, Chars::Digits], None)},
-        "Simple" => {Config::new(12, vec![Chars::Lowercase, Chars::Digits], None)},
-        "Medium" => {Config::new(16, vec![Chars::Lowercase, Chars::Uppercase, Chars::Digits], None)},
-        "Advanced" => {Config::new(18, vec![Chars::Lowercase, Chars::Uppercase, Chars::Digits], None)},
-        "Secure" => {Config::new(24, vec![Chars::Lowercase, Chars::Uppercase, Chars::Digits, Chars::Special], None)},
-        "Maximum security" => {Config::new(48, vec![Chars::Lowercase, Chars::Uppercase, Chars::Digits, Chars::Special], None)},
-        "Gynormous" => {Config::new(1024, vec![Chars::Lowercase, Chars::Uppercase, Chars::Digits, Chars::Special], None)},
+        "Bad" => {Config::new(6, vec![Chars::Lowercase, Chars::Digits], None, false)},
+        "Simple" => {Config::new(12, vec![Chars::Lowercase, Chars::Digits], None, false)},
+        "Medium" => {Config::new(16, vec![Chars::Lowercase, Chars::Uppercase, Chars::Digits], None, false)},
+        "Advanced" => {Config::new(18, vec![Chars::Lowercase, Chars::Uppercase, Chars::Digits], None, true)},
+        "Secure" => {Config::new(24, vec![Chars::Lowercase, Chars::Uppercase, Chars::Digits, Chars::Special], None, true)},
+        "Maximum security" => {Config::new(48, vec![Chars::Lowercase, Chars::Uppercase, Chars::Digits, Chars::Special], None, true)},
+        "Gynormous" => {Config::new(1024, vec![Chars::Lowercase, Chars::Uppercase, Chars::Digits, Chars::Special], None, true)},
         _ => todo!(),
     }
 }

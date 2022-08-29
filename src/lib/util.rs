@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fs::File};
 
 use super::config::Config;
 use rand::{self, seq::SliceRandom};
@@ -57,7 +57,7 @@ pub fn remove_excl<'a>(chars: &'a mut Vec<char>, exlcuded: Option<Vec<char>>) ->
     }
 }
 
-pub fn format_output(password: String, entropy: f64) -> String{
+pub fn format_output(password: String, entropy: f64, config: &Config) -> String{
     let colors = HashMap::from([
         ((0, 25), Color::Red),
         ((25, 60), Color::Orange1),
@@ -73,12 +73,45 @@ pub fn format_output(password: String, entropy: f64) -> String{
         }
     }
 
+    let mut format_occurrences = String::new();
+    if config.check_wordlists{
+        let occurrences = check_wordlists(password.clone());
+        for oc in occurrences{
+            format_occurrences.push_str(format!("found in wordlist {} on line {}!", oc.0, oc.1).as_str());
+        }
+    }
+    let format_occurrences = format_occurrences.red();
+
     format!("
 {d}
 {password}
 
 
 Entropy: {e}
+{format_occurrences}
 {d}
 ", d = "-".repeat(std::cmp::min(password.len(), termion::terminal_size().unwrap().0.into()))).to_string()
+}
+
+// Check if password is found in selected wordlists. Returns a list of touples (name of wordlist, line)
+pub fn check_wordlists(password: String) -> Vec<(String, usize)>{
+    use std::fs;
+    let mut occurrences: Vec<(String, usize)> = Vec::new();
+    let wordlists = match fs::read_dir("./wordlists"){
+        Ok(w) => w,
+        Err(_) => {return occurrences}
+    };
+    for wordlist in wordlists{
+        let wordlist = wordlist.unwrap();
+        let content = fs::read_to_string(&wordlist.path()).ok();
+        if content.is_some(){
+            for (i, line) in content.unwrap().split("\n").enumerate(){
+                if line == password{
+                    occurrences.push((wordlist.file_name().into_string().unwrap(), i));
+                }
+            }
+        }
+    };
+
+    occurrences
 }
