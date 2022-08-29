@@ -1,5 +1,6 @@
-use std::{collections::HashMap, fs::File};
+#![allow(unused)]
 
+use std::{collections::HashMap};
 use super::config::Config;
 use rand::{self, seq::SliceRandom};
 use termion;
@@ -77,7 +78,7 @@ pub fn format_output(password: String, entropy: f64, config: &Config) -> String{
     if config.check_wordlists{
         let occurrences = check_wordlists(password.clone());
         for oc in occurrences{
-            format_occurrences.push_str(format!("found in wordlist {} on line {}!", oc.0, oc.1).as_str());
+            format_occurrences.push_str(format!("!Found in wordlist {} on line {}!\n", oc.0, oc.1).as_str());
         }
     }
     let format_occurrences = format_occurrences.red();

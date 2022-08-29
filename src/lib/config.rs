@@ -1,5 +1,6 @@
-use std::{fmt::Debug, process::exit};
+#![allow(unused)]
 
+use std::{fmt::Debug, process::exit};
 use super::{util, menu};
 use util::Chars;
 
@@ -25,7 +26,7 @@ impl Config{
         let mut check_wordlists = false;
         // Return if arg length is below 1
         if args.len() <= 0{
-            return Ok(Config::default());
+            return Ok(menu::home());
         }
 
         // Check for interactive

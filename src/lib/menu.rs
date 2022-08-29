@@ -1,4 +1,5 @@
 #![allow(unused)]
+
 use inquire;
 use super::config::Config;
 use super::util::{Chars};
