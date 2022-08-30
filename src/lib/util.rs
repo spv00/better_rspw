@@ -11,7 +11,7 @@ pub const LOWERCASE: [char; 26] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 
 pub const UPPERCASE: [char; 26] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 pub const SPECIAL: [char; 9] = ['!', '$', '%', '(', ')', '/', '#', '+', '?'];
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Chars{
     Uppercase,
     Lowercase,
@@ -32,6 +32,7 @@ impl Chars{
 pub fn generate(config: &Config) -> String{
     let mut out: String = String::new();
     let mut chars = config.chars();
+    if chars.len() <= 0{eprintln!("Empty Char list. Exiting!"); std::process::exit(1)}
     remove_excl(&mut chars, config.exclude.clone());
     for _ in 0..config.len.clone(){
         let selected = chars.choose(&mut rand::thread_rng()).unwrap().to_owned().to_owned();
@@ -115,4 +116,13 @@ pub fn check_wordlists(password: String) -> Vec<(String, usize)>{
     };
 
     occurrences
+}
+
+#[cfg(test)]
+mod tests{
+    use super::*;
+    #[test]
+    fn test_entropy(){
+        assert_eq!(calc_entropy(&Config::default()), 71.4503557246425);
+    }
 }

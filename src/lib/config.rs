@@ -4,7 +4,7 @@ use std::{fmt::Debug, process::exit};
 use super::{util, menu};
 use util::Chars;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Config{
     pub chars: Vec<util::Chars>,
     pub len: i32,
@@ -26,7 +26,7 @@ impl Config{
         let mut check_wordlists = false;
         // Return if arg length is below 1
         if args.len() <= 0{
-            return Ok(menu::home());
+            return Ok(Self::default());
         }
 
         // Check for interactive
@@ -80,6 +80,12 @@ impl Config{
     }
 }
 
+impl std::fmt::Display for Config{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Length: {} || Characters: {:?} || Excluded: {:?} || Check Wordlists: {}", self.len, self.chars(), self.exclude, self.check_wordlists)
+    }
+}
+
 impl Default for Config{
     fn default() -> Config{
         Config { chars: vec![Chars::Uppercase, Chars::Lowercase, Chars::Digits], len: 12, exclude: None, check_wordlists: false }
@@ -96,5 +102,15 @@ impl std::error::Error for ConfigError{
 impl std::fmt::Display for ConfigError{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "Failed to parse config! Exiting!")
+    }
+}
+
+#[cfg(test)]
+mod tests{
+    use super::*;
+    #[test]
+    fn test_parser(){
+        assert_eq!(Config::parse(vec![]).unwrap(), Config::default());
+        assert_eq!(Config::parse("-l 16 -p uld -w".split(" ").map(String::from).collect::<Vec<String>>()).unwrap(), Config::new(16, vec![Chars::Uppercase, Chars::Lowercase, Chars::Digits], Some(vec![]), true));
     }
 }

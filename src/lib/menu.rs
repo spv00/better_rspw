@@ -79,5 +79,5 @@ fn select_exclude() -> Option<Vec<char>>{
 }
 
 fn print_conf(config: &Config){
-    println!("{:?}", config);
+    println!("{}", config);
 }
